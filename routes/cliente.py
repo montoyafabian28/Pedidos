@@ -38,3 +38,11 @@ async def createCliente(cliente: ClienteBase, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail='Cliente ya existente')
 
     return crud.create_cliente(db,cliente)
+
+@cliente.delete('/cliente/{id}', response_model=ClienteBase)
+async def deleteCliente(id: str, db: Session = Depends(get_db)):
+    db_cliente = crud.get_cliente_by_id(db, id)
+    if db_cliente is not None:
+        return crud.delete_cliente(db_cliente,db)
+    else:
+        raise HTTPException(status_code=400, detail='Bad Id')

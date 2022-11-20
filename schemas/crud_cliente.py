@@ -19,3 +19,9 @@ def create_cliente(db: Session, cliente: ClienteBase):
 
 def get_cliente_by_id(db: Session, id: str):
     return db.query(Cliente).filter(Cliente.IdCliente == id).first()
+
+def delete_cliente(cliente: Cliente, db: Session):
+    db.delete(cliente)
+    db.commit()
+
+    return cliente
