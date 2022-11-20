@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class ClienteBase(BaseModel):
+    IdCliente: str
     NombreEmpresa: str | None = None
     NombreContacto : str | None = None
     CargoContacto : str | None = None
@@ -13,13 +14,6 @@ class ClienteBase(BaseModel):
     Telefono : str | None = None
     Fax : str | None = None
 
-
-
-class ClienteCreate(ClienteBase):
-    pass
-
-class Cliente(ClienteBase):
-    IdCliente: str 
-    
     class Config:
         orm_mode = True
+

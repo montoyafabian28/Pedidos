@@ -3,7 +3,7 @@ from config.db import engine, SessionLocal
 import models.cliente
 import schemas.crud_cliente as crud
 from sqlalchemy.orm import Session
-from schemas.Cliente import Cliente
+from schemas.Cliente import ClienteBase
 
 models.cliente.Base.metadata.create_all(engine)
 
@@ -18,16 +18,23 @@ def get_db():
         db.close()
 
 
-@cliente.get('/clientes', response_model=list[Cliente])
+@cliente.get('/clientes', response_model=list[ClienteBase])
 async def getClientes(skip: int = 0, limit: int = 10,db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
+    users = crud.get_clientes(db, skip=skip, limit=limit)
     return users
 
 
-@cliente.get('/cliente/{id}', response_model=Cliente)
+@cliente.get('/cliente/{id}', response_model=ClienteBase)
 async def getCliente(id: str,db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id = id)
-    if db_user is None:
+    db_cliente = crud.get_cliente(db, cliente_id=id)
+    if db_cliente is None:
         raise HTTPException(status_code=404, detail="User Not Found")
-    return db_user
+    return db_cliente
 
+@cliente.post('/clientes', response_model=ClienteBase)
+async def createCliente(cliente: ClienteBase, db: Session = Depends(get_db)):
+    db_cliente = crud.get_cliente_by_id(db, cliente.IdCliente)
+    if db_cliente:
+        raise HTTPException(status_code=400, detail='Cliente ya existente')
+
+    return crud.create_cliente(db,cliente)
