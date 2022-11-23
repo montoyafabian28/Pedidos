@@ -20,8 +20,8 @@ def get_db():
 
 @cliente.get('/clientes', response_model=list[ClienteBase])
 async def getClientes(skip: int = 0, limit: int = 10,db: Session = Depends(get_db)):
-    users = crud.get_clientes(db, skip=skip, limit=limit)
-    return users
+    clientes = crud.get_clientes(db, skip=skip, limit=limit)
+    return clientes
 
 
 @cliente.get('/cliente/{id}', response_model=ClienteBase)
@@ -46,3 +46,11 @@ async def deleteCliente(id: str, db: Session = Depends(get_db)):
         return crud.delete_cliente(db_cliente,db)
     else:
         raise HTTPException(status_code=400, detail='Bad Id')
+
+@cliente.put('/clientes')
+async def updateCliente(cliente: ClienteBase, db: Session = Depends(get_db)):
+    db_cliente = crud.get_cliente_by_id(db,cliente.IdCliente)
+    if db_cliente is not None:
+        return crud.update_cliente(db_cliente,db)
+    else:
+        raise HTTPException(status_code=400, detail='Bad client data')

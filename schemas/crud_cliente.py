@@ -25,3 +25,7 @@ def delete_cliente(cliente: Cliente, db: Session):
     db.commit()
 
     return cliente
+
+def update_cliente(cliente: Cliente, db: Session):
+
+    return db.query(Cliente).filter(Cliente.IdCliente == cliente.IdCliente).update({Cliente.NombreEmpresa: 'yo'})
