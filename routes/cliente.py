@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from config.db import engine, SessionLocal
 import models.cliente
 import schemas.crud_cliente as crud
+import schemas.crud_pedidos as crud_pedidos
 from sqlalchemy.orm import Session
-from schemas.Cliente import ClienteBase
+from schemas.Cliente import ClienteBase, PedidoBase
 
 models.cliente.Base.metadata.create_all(engine)
 
@@ -22,6 +23,33 @@ def get_db():
 async def getClientes(skip: int = 0, limit: int = 10,db: Session = Depends(get_db)):
     clientes = crud.get_clientes(db, skip=skip, limit=limit)
     return clientes
+
+@cliente.get('/pedidos')
+async def getPedidos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    pedidos = crud_pedidos.get_pedidos(db,skip,limit)
+    return pedidos
+
+@cliente.get('/pedido/{id}')
+async def getPedido(id: int, db: Session = Depends(get_db)):
+    db_pedido = crud_pedidos.get_pedido(db, id)
+    if db_pedido is None:
+        raise HTTPException(status_code=404, detail='Pedido not found')
+    return db_pedido
+
+@cliente.get('/producto/{id}')
+async def getProducto(id: int, db: Session = Depends(get_db)):
+    db_producto = crud_pedidos.get_producto(db, id)
+    if db_producto is None:
+        raise HTTPException(status_code=404, detail='producto not found')
+    return db_producto
+
+@cliente.get('/detallesPedidos/{id}')
+async def getDetallesPedidos(id: int, db: Session = Depends(get_db)):
+    db_dPedido = crud_pedidos.get_detallesPedidos(db, id)
+    if db_dPedido is None:
+        raise HTTPException(status_code=404, detail='detalles not found')
+    return db_dPedido
+
 
 
 @cliente.get('/cliente/{id}', response_model=ClienteBase)
